@@ -16,7 +16,7 @@ def parse_published_year(conference):
 
 class QuotesSpider(scrapy.Spider):
   name = "sqlite"
-  download_delay = 1.5 # Avoid triggering robots.txt
+  download_delay = 1 # Avoid triggering robots.txt
 
   input_file = "targets.json"
   output_file = "data.db"
@@ -84,12 +84,23 @@ class QuotesSpider(scrapy.Spider):
         ))
         (publ_id, ) = c.execute("SELECT last_insert_rowid()").fetchone()
 
-        # Insert authors and publ_author connections
+        # Insert authors
         for author in publication.css("span a span::text").getall():
-          c.execute('''
-            REPLACE INTO authors (name) VALUES (?)
-          ''', (author, ))
-          (author_id, ) = c.execute("SELECT last_insert_rowid()").fetchone()
+          author_id = 0
+          target_author = c.execute('''
+            SELECT id FROM authors WHERE name = ?
+          ''', (author, )).fetchone()
+
+          # Avoid repeated insertion
+          if target_author is not None:
+            (author_id, ) = target_author
+          else:
+            c.execute('''
+              INSERT INTO authors (name) VALUES (?)
+            ''', (author, ))
+            (author_id, ) = c.execute("SELECT last_insert_rowid()").fetchone()
+
+          # Insert publ_author connections
           c.execute('''
             INSERT INTO publ_author (publ_id, author_id) VALUES (?, ?)
           ''', (publ_id, author_id))
