@@ -1,7 +1,7 @@
 
 ## PublSpider
 
-PublSpider is a network spider tool based on `scrapy`. It is designed to gather the information about academic publications.
+PublSpider is a web crawler based on `scrapy`. It is designed to gather the information about academic publications.
 
 ### To start using PublSpider
 
@@ -34,3 +34,9 @@ After executing `scrapy crawl sqlite`, a file names `data.db` should be generate
 [json](https://www.json.org/json-en.html) is a lightweight data-interchange format. It is easy for humans to read and write. It is easy for machines to parse and generate.
 
 After executing `scrapy crawl json`, a file names `data.json` should be generated in your working directory. JSON files could be viewed or edited by any text editor.
+
+### Configuring
+
+Some advanced features will not be available until you enable them. Edit `settings.py` and you can see some extra settings:
+
+- `CRAWL_METRICS`: if set to `True`, metrics of each publication (like abstract) will also be crawled. **Attention**: this option is very time-consuming.
